@@ -1,5 +1,8 @@
+from random import choice
+
 import pygame
 import sys
+import  random
 
 def create_ball(start_pos, end_pos, radius=15, accel=0.15):
     start = pygame.Vector2(start_pos)
@@ -16,17 +19,20 @@ def create_ball(start_pos, end_pos, radius=15, accel=0.15):
         "active": True
     }
 
-def update_ball(ball):
+def update_ball(ball, basket_pos):
     if ball and ball["active"]:
         ball["vel"] += ball["accel"]
         ball["pos"] += ball["dir"] * ball["vel"]
         if (ball["pos"] - ball["start"]).length() >= (ball["end"] - ball["start"]).length():
             ball["active"] = False
-    return  ball
+
+            if [int(ball["end"].x), int(ball["end"].y)] == basket_pos:
+                return "hit"
+            return  "miss"
+    return  "moving"
 
 def draw_ball(surface, ball, angle):
     if ball:
-        pygame.draw.line(surface, YELLOW, ball["start"], ball["end"], 2)
         if angle:
             normal = pygame.Vector2(ball["dir"].y, -ball["dir"].x)
         else:
@@ -51,6 +57,11 @@ basket_left_down = [200, 500]
 basket_right_up = [500, 300]
 basket_left_up = [200, 300]
 
+last_spawn_time = 0
+spawn_delay = 1500
+score = 0
+misses = 0
+
 position_x = 500
 position_y = 500
 size_width = 100
@@ -65,16 +76,12 @@ ball_left_down = None
 running = True
 
 while running:
+    current_time = pygame.time.get_ticks()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                ball_left_up = create_ball([0, 0], basket_left_up)
-                ball_left_down = create_ball([0, 200], basket_left_down)
-                ball_right_up = create_ball([800, 0], [600, 300])
-                ball_right_down = create_ball([800, 200], [600, 500])
             if event.key == pygame.K_UP:
                 if [position_x, position_y] == basket_right_down:
                     position_x, position_y =basket_right_up[0], basket_right_up[1]
@@ -97,11 +104,21 @@ while running:
                 elif [position_x, position_y] == basket_left_down:
                     position_x, position_y = basket_right_down[0], basket_right_down[1]
 
-    if ball_left_up and ball_left_down and ball_right_up and ball_right_down:
-        ball_left_up = update_ball(ball_left_up)
-        ball_left_down = update_ball(ball_left_down)
-        ball_right_up = update_ball(ball_right_up)
-        ball_right_down = update_ball(ball_right_down)
+    if current_time - last_spawn_time > spawn_delay:
+        choice = random.randint(1, 4)
+        if choice == 1 and not (ball_left_up["active"]):
+            ball_left_up = create_ball([0, 0], basket_left_up)
+        elif choice == 2 and not (ball_left_down["active"]):
+            ball_left_down = create_ball([0, 200], basket_left_down)
+        elif choice == 3 and not (ball_right_up["active"]):
+            ball_right_up = create_ball([800, 0], basket_right_up)
+        elif choice == 4 and not (ball_right_down["active"]):
+            ball_right_down = create_ball([800, 200], basket_right_down)
+        last_spawn_time = current_time
+
+    current_basket = [position_x, position_y]
+
+    for ball_var in ['ball_left_up', 'ball_left_down', 'ball_right_up', 'ball_right_down']
 
     screen.fill((0, 225, 0))
 
