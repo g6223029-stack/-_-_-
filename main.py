@@ -48,6 +48,8 @@ YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
+font = pygame.font.SysFont("Arial", 36, bold=True)
+
 clock = pygame.time.Clock()
 
 pygame.display.set_caption("Волк ловит яйца")
@@ -119,14 +121,29 @@ while running:
     current_basket = [position_x, position_y]
 
     for ball_var in ['ball_left_up', 'ball_left_down', 'ball_right_up', 'ball_right_down']
+        ball_data = globals()[ball_var]
+        if ball_data and ball_data["active"]:
+            res = update_ball(ball_data, current_basket, size_width, size_height)
+            if res == "hit":
+                score += 1
+            elif res == "miss":
+                misses += 1
 
     screen.fill((0, 225, 0))
 
     pygame.draw.rect(screen, (255, 217, 105), (position_x, position_y, size_width, size_height))   #рисуем корзину
+    pygame.draw.line(screen, YELLOW, [0, 0], basket_left_up, 2)
+    pygame.draw.line(screen, YELLOW, [0, 0], basket_left_down, 2)
+    pygame.draw.line(screen, YELLOW, [0, 0], basket_right_up, 2)
+    pygame.draw.line(screen, YELLOW, [0, 0], basket_right_down, 2)
+
     draw_ball(screen, ball_left_up, True)
     draw_ball(screen, ball_left_down, True)
     draw_ball(screen, ball_right_up, False)
     draw_ball(screen, ball_right_down, False)
+
+    screen.blit(font.render(f"Счёт: {score}", True, (0, 0, 0)), (WIDTH //2- 50,20))
+    screen.blit(font.render(f"Промахи: {misses}", True, (200, 0, 0)), (WIDTH //2- 70,60))
 
     pygame.display.flip()
     clock.tick(60)
