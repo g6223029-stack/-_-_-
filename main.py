@@ -108,13 +108,13 @@ while running:
 
     if current_time - last_spawn_time > spawn_delay:
         choice = random.randint(1, 4)
-        if choice == 1 and not (ball_left_up["active"]):
+        if choice == 1 and not (ball_left_up and ball_left_up["active"]):
             ball_left_up = create_ball([0, 0], basket_left_up)
-        elif choice == 2 and not (ball_left_down["active"]):
+        elif choice == 2 and not (ball_left_down and ball_left_down["active"]):
             ball_left_down = create_ball([0, 200], basket_left_down)
-        elif choice == 3 and not (ball_right_up["active"]):
+        elif choice == 3 and not (ball_right_up and ball_right_up["active"]):
             ball_right_up = create_ball([800, 0], basket_right_up)
-        elif choice == 4 and not (ball_right_down["active"]):
+        elif choice == 4 and not (ball_right_down and ball_right_down["active"]):
             ball_right_down = create_ball([800, 200], basket_right_down)
         last_spawn_time = current_time
 
@@ -128,6 +128,9 @@ while running:
                 score += 1
             elif res == "miss":
                 misses += 1
+
+    if misses > 3:
+        running = False
 
     screen.fill((0, 225, 0))
 
