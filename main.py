@@ -66,6 +66,12 @@ spawn_delay = 1500
 score = 0
 misses = 0
 
+bg_img = pygame.image.load("дом.jfif").convert()
+bg_img = pygame.transform.scale(bg_img, (WIDTH, HEIGHT))
+
+bascet_img = pygame.image.load("карзина.jfif").convert_alpha()
+bascet_img = pygame.transform.scale(bascet_img, (100, 50))
+
 position_x = 500
 position_y = 500
 size_width = 100
@@ -134,9 +140,9 @@ while running:
     if misses > 3:
         running = False
 
-    screen.fill((0, 225, 0))
+    screen.blit(bg_img, (0, 0))
 
-    pygame.draw.rect(screen, (255, 217, 105), (position_x, position_y, size_width, size_height))   #рисуем корзину
+    screen.blit(bascet_img, (position_x, position_y))  #рисуем корзину
     pygame.draw.line(screen, YELLOW, [0, 0], [250, 300], 2)
     pygame.draw.line(screen, YELLOW, [0, 200], [250, 500], 2)
     pygame.draw.line(screen, YELLOW, [800, 0], [550, 300], 2)
